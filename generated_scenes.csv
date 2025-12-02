@@ -1,6 +1,5 @@
 scene_number,script_line,scene_type,props
-1,"A muscular caveman in his 20s with long brown hair and beard walks through a rugged prehistoric landscape, returning to his cave after a hunt, carrying a spear and animal hide.",animated,"spear,animal hide"
-2,"The caveman enters the dark, rocky interior of his cave, looking tired but relieved, with faint sunlight streaming through the entrance.",static,
-3,"The caveman kneels by a small pile of sticks and stones, striking flints to create sparks and start a fire inside the cave.",animated,"sticks,stones,flint"
-4,"A warm fire glows in the cave, casting light on the caveman’s face as he sits cross-legged, watching the flames with satisfaction.",static,fire
-5,"The caveman cooks a piece of raw meat over the fire, holding it on a sharpened stick, with smoke rising and the cave walls illuminated by flickering light.",animated,"raw meat,sharpened stick,fire"
+1,"A group of muscular cavemen in their 20s with long brown hair and beards walks through a rugged prehistoric landscape, returning to their cave after a hunt, carrying crude spears and animal hides.",animated,"spears,animal hides"
+2,"The cavemen enter a dark, rocky cave with rough stone walls, setting down their hunting gear near the entrance.",static,"spears,animal hides"
+3,"One caveman kneels in the cave, striking flint stones together to create sparks, starting a small fire in a pit surrounded by rocks.",animated,"flint stones,fire pit,rocks"
+4,"The caveman places raw meat on a flat stone over the now-blazing fire, smoke rising as the meat begins to cook, while others sit nearby watching.",animated,"raw meat,flat stone,fire"

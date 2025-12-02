@@ -67,11 +67,14 @@ function App() {
   const startGeneration = async () => {
     setIsGenerating(true)
     setError(null)
+    setCurrentScene(0)
+    setScenes([])
 
     try {
-      let response;
+      let jobId: string;
+
       if (inputMethod === 'script') {
-        response = await fetch('http://localhost:5001/api/generate-from-script', {
+        const response = await fetch('http://localhost:5001/api/generate-images', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -82,35 +85,92 @@ function App() {
             style: selectedStyle
           }),
         });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to start generation');
+        }
+
+        const data = await response.json();
+        jobId = data.job_id;
       } else {
+        // Upload file first
         const formData = new FormData();
-        formData.append('api_key', apiKey);
         if (selectedFile) {
           formData.append('file', selectedFile);
         }
 
-        response = await fetch('http://localhost:5001/api/generate-from-file', {
+        const uploadResponse = await fetch('http://localhost:5001/api/upload', {
           method: 'POST',
           body: formData,
         });
+
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.error || 'Failed to upload file');
+        }
+
+        const uploadData = await uploadResponse.json();
+        const filePath = uploadData.file_path;
+
+        // Start generation
+        const genResponse = await fetch('http://localhost:5001/api/generate-images', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            api_key: apiKey,
+            file_path: filePath,
+            style: selectedStyle
+          }),
+        });
+
+        if (!genResponse.ok) {
+          const errorData = await genResponse.json();
+          throw new Error(errorData.error || 'Failed to start generation');
+        }
+
+        const genData = await genResponse.json();
+        jobId = genData.job_id;
       }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate images');
-      }
+      // Poll for progress
+      const pollProgress = async () => {
+        try {
+          const progressResponse = await fetch(`http://localhost:5001/api/progress/${jobId}`);
+          if (!progressResponse.ok) {
+            throw new Error('Failed to get progress');
+          }
 
-      const data = await response.json();
+          const progressData = await progressResponse.json();
 
-      setScenes(data.scenes || []);
-      setGeneratedImages(data.images.map((filename: string) => `http://localhost:5001/api/images/${filename}`));
+          if (progressData.status === 'error') {
+            throw new Error(progressData.error || 'Generation failed');
+          } else if (progressData.status === 'completed') {
+            setScenes(progressData.scenes);
+            setGeneratedImages(progressData.images.map((filename: string) => `http://localhost:5001/api/images/${filename}`));
+            setCurrentStep('results');
+            return;
+          } else {
+            // Update progress
+            setScenes(progressData.scenes);
+            setCurrentScene(progressData.current_scene);
+          }
 
-      setCurrentStep('results')
+          // Continue polling
+          setTimeout(pollProgress, 1000);
+        } catch (err) {
+          console.error('Progress polling error:', err);
+          setError(err instanceof Error ? err.message : 'Progress monitoring failed');
+        }
+      };
+
+      pollProgress();
     } catch (err) {
       console.error('Generation error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to generate images. Please try again.')
-    } finally {
-      setIsGenerating(false)
+      setError(err instanceof Error ? err.message : 'Failed to generate images. Please try again.');
+      setIsGenerating(false);
     }
   }
 
