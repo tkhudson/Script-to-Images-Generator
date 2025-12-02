@@ -7,6 +7,7 @@ import time
 import base64
 import requests  # For downloading if using URL format
 import getpass  # For secure API key input
+import sys
 from openai import OpenAI
 
 # Set up logging
@@ -313,6 +314,112 @@ def main():
 
         except Exception as e:
             logger.error(f"Failed to generate scene {scene['scene_number']}: {str(e)}")
+
+def process_script_programmatically(api_key, script, style_preference, output_dir='output_images', template=None):
+    """
+    Process a script programmatically (for Flask backend).
+    Returns (scenes, generated_images)
+    """
+    if template is None:
+        template = f"A {style_preference} {{scene_type}} scene showing: {{script_line}}. With props: {{props}}."
+
+    # Initialize client
+    client = OpenAI(
+        api_key=api_key,
+        base_url="https://api.x.ai/v1"
+    )
+
+    # Parse script with AI
+    logger.info("Analyzing script with AI...")
+    scenes = parse_script_with_ai(client, script, style_preference)
+
+    # Add style preference to scenes for template use
+    for scene in scenes:
+        scene['style'] = style_preference
+
+    # Write to CSV
+    csv_path = 'generated_scenes.csv'
+    write_scenes_to_csv(scenes, csv_path)
+
+    # Create output dir
+    os.makedirs(output_dir, exist_ok=True)
+
+    generated_images = []
+
+    for scene in scenes:
+        try:
+            # Generate prompt
+            prompt = generate_prompt(scene, template)
+            logger.info(f"Generating image for scene {scene['scene_number']}: {prompt[:50]}...")
+
+            # Generate image
+            img_bytes = generate_image(client, prompt, 'base64', 3)
+
+            # Save image
+            scene_num_str = f"{scene['scene_number']:03d}"
+            output_path = os.path.join(output_dir, f"scene_{scene_num_str}.png")
+            with open(output_path, 'wb') as f:
+                f.write(img_bytes)
+            logger.info(f"Saved {output_path}")
+            generated_images.append(f"scene_{scene_num_str}.png")
+
+            # Optional: add delay to respect rate limits
+            time.sleep(0.2)
+
+        except Exception as e:
+            logger.error(f"Failed to generate scene {scene['scene_number']}: {str(e)}")
+            raise
+
+    return scenes, generated_images
+
+def process_file_programmatically(api_key, input_file, output_dir='output_images', template=None):
+    """
+    Process a CSV/JSON file programmatically (for Flask backend).
+    Returns generated_images
+    """
+    if template is None:
+        template = "A {style} {scene_type} scene showing: {script_line}. With props: {props}."
+
+    # Initialize client
+    client = OpenAI(
+        api_key=api_key,
+        base_url="https://api.x.ai/v1"
+    )
+
+    # Load scenes
+    scenes = load_input_file(input_file)
+    logger.info(f"Loaded {len(scenes)} scenes.")
+
+    # Create output dir
+    os.makedirs(output_dir, exist_ok=True)
+
+    generated_images = []
+
+    for scene in scenes:
+        try:
+            # Generate prompt
+            prompt = generate_prompt(scene, template)
+            logger.info(f"Generating image for scene {scene['scene_number']}: {prompt[:50]}...")
+
+            # Generate image
+            img_bytes = generate_image(client, prompt, 'base64', 3)
+
+            # Save image
+            scene_num_str = f"{scene['scene_number']:03d}"
+            output_path = os.path.join(output_dir, f"scene_{scene_num_str}.png")
+            with open(output_path, 'wb') as f:
+                f.write(img_bytes)
+            logger.info(f"Saved {output_path}")
+            generated_images.append(f"scene_{scene_num_str}.png")
+
+            # Optional: add delay to respect rate limits
+            time.sleep(0.2)
+
+        except Exception as e:
+            logger.error(f"Failed to generate scene {scene['scene_number']}: {str(e)}")
+            raise
+
+    return generated_images
 
 if __name__ == '__main__':
     main()

@@ -1,18 +1,63 @@
 # Script to Images Generator
 
-Automatically generate images from video scripts using xAI Grok API.
+A professional web application to automatically generate images from video scripts using xAI Grok API. Features a clean, Framer-inspired frontend interface.
 
 ## Features
 
+- **Web Interface**: Clean, professional UI with step-by-step workflow
 - **Script Input Mode**: Input a full storyline/script and let AI automatically break it into scenes
 - **Style Selection**: Choose from various image styles (photorealistic, animated, 3D, cartoon, etc.)
 - **CSV/JSON Support**: Load structured scene data from files
 - **AI Script Parsing**: Uses Grok API to intelligently analyze scripts and extract scenes, props, and scene types
 - **Batch Image Generation**: Generate multiple images with sequential naming
+- **Progress Tracking**: Real-time progress updates during image generation
 - **Error Handling**: Built-in retries and comprehensive logging
 - **Multiple Formats**: Support for both base64 and URL image responses
 
-## Installation
+## Quick Start
+
+### Option 1: One-Click Startup (Recommended)
+
+Simply run the startup script to automatically set up and launch everything:
+
+```bash
+./start.sh
+```
+
+This will:
+- Create a virtual environment (if needed)
+- Install all dependencies
+- Start both backend and frontend servers
+- Open the application in your browser
+
+### Option 2: Manual Setup
+
+1. **Install backend dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+2. **Install frontend dependencies:**
+```bash
+cd frontend
+npm install
+cd ..
+```
+
+3. **Start the backend server:**
+```bash
+python backend/app.py
+```
+
+4. **Start the frontend (in a new terminal):**
+```bash
+cd frontend
+npm run dev
+```
+
+5. **Open your browser** and navigate to `http://localhost:5173`
+
+### Option 3: Command Line Only
 
 ```bash
 pip install -r requirements.txt
