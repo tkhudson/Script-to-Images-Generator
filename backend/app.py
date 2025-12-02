@@ -16,7 +16,7 @@ CORS(app)  # Enable CORS for all routes
 
 # Configuration
 UPLOAD_FOLDER = 'uploads'
-OUTPUT_FOLDER = 'output_images'
+OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'output_images')
 ALLOWED_EXTENSIONS = {'csv', 'json'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -121,4 +121,4 @@ def download_all():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5001)

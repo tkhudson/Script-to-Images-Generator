@@ -71,7 +71,7 @@ function App() {
     try {
       let response;
       if (inputMethod === 'script') {
-        response = await fetch('http://localhost:5000/api/generate-from-script', {
+        response = await fetch('http://localhost:5001/api/generate-from-script', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ function App() {
           formData.append('file', selectedFile);
         }
 
-        response = await fetch('http://localhost:5000/api/generate-from-file', {
+        response = await fetch('http://localhost:5001/api/generate-from-file', {
           method: 'POST',
           body: formData,
         });
@@ -103,7 +103,7 @@ function App() {
       const data = await response.json();
 
       setScenes(data.scenes || []);
-      setGeneratedImages(data.images.map((filename: string) => `http://localhost:5000/api/images/${filename}`));
+      setGeneratedImages(data.images.map((filename: string) => `http://localhost:5001/api/images/${filename}`));
 
       setCurrentStep('results')
     } catch (err) {
