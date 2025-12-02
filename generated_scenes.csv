@@ -1,0 +1,6 @@
+scene_number,script_line,scene_type,props
+1,"A man stands alone in a dense forest, looking around with a worried expression as smoke begins to rise in the distance",static,"trees,smoke"
+2,"The man runs through the forest, flames and thick smoke closing in behind him, panic on his face",animated,"trees,flames,smoke"
+3,"The man reaches a wide river, pausing to look back at the raging forest fire before preparing to cross",static,"river,flames,smoke"
+4,"The man wades through the river, struggling against the current as water splashes around him",animated,"river,water splashes"
+5,"The man climbs onto the opposite riverbank, exhausted but safe, looking back at the distant fire with relief",static,"riverbank,distant flames"

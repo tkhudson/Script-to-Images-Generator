@@ -1,0 +1,4 @@
+scene_number,script_line,scene_type,props
+1,"Character enters the room excitedly","animated","coin,card"
+2,"Character picks up the phone","static","phone"
+3,"Character flips a card on the table","animated","card,tracker"
